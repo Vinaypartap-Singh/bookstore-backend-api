@@ -27,9 +27,14 @@ export class BookstoreService {
     }
   }
 
-  findAll() {
+  findAll(page = 1, limit = 10) {
     try {
-      const books = this.databaseService.bookStore.findMany();
+      const skip = (page - 1) * limit;
+      const books = this.databaseService.bookStore.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
       return books;
     } catch (error) {
       throw new InternalServerErrorException('An Error Occured');

@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { BookstoreService } from './bookstore.service';
@@ -34,9 +35,11 @@ export class BookstoreController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('page') page: number, @Query('limit') limit: number) {
     try {
-      const books = this.bookstoreService.findAll();
+      const pageNumber = page || 1;
+      const limitNumber = limit || 1;
+      const books = this.bookstoreService.findAll(pageNumber, limitNumber);
       return books;
     } catch (error) {
       throw new InternalServerErrorException('An Unexpected Error');
