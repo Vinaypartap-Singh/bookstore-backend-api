@@ -1,17 +1,26 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { CreateBookDto } from './dto/create-book-dto';
+import { UpdateBookstoreDto } from './dto/update/update-book-dto';
 
 @Injectable()
 export class BookstoreService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  create(createBookstoreDto: Prisma.BookStoreCreateInput) {
+  create(createBookstoreDto: CreateBookDto) {
     try {
       return this.databaseService.bookStore.create({
         data: createBookstoreDto,
       });
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Book with this name already exists.');
+      }
       throw new InternalServerErrorException(
         'An unexpected error occurred while adding this book.',
       );
@@ -19,19 +28,60 @@ export class BookstoreService {
   }
 
   findAll() {
-    return this.databaseService.bookStore.findMany();
+    try {
+      const books = this.databaseService.bookStore.findMany();
+      return books;
+    } catch (error) {
+      throw new InternalServerErrorException('An Error Occured');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bookstore`;
+  findOne(id: string) {
+    try {
+      const book = this.databaseService.bookStore.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!book) {
+        throw new NotFoundException(
+          'The book you are looking for is not available please check again later',
+        );
+      }
+
+      return book;
+    } catch (error) {
+      throw new InternalServerErrorException('Book Not Found');
+    }
   }
 
-  update(id: number, updateBookstoreDto: Prisma.BookStoreUpdateInput) {
-    // Add Prisma DTO Laters
-    return `This action updates a #${id} bookstore`;
+  update(id: string, updateBookstoreDto: UpdateBookstoreDto) {
+    try {
+      const updatedBook = this.databaseService.bookStore.update({
+        where: {
+          id: id,
+        },
+        data: updateBookstoreDto,
+      });
+
+      return updatedBook;
+    } catch (error) {
+      throw new InternalServerErrorException('Book Not Found');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bookstore`;
+  remove(id: string) {
+    try {
+      const deletedBook = this.databaseService.bookStore.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      return deletedBook;
+    } catch (error) {
+      throw new InternalServerErrorException('Book Not Found');
+    }
   }
 }
