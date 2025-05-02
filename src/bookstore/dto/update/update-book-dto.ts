@@ -14,6 +14,18 @@ export class UpdateBookstoreDto {
   bookCaption?: string;
 
   @IsOptional()
+  @IsString()
+  bookImageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  bookDownloadUrl: string;
+
+  @IsOptional()
+  @IsString()
+  bookGenre: string;
+
+  @IsOptional()
   @IsDateString()
   createdAt?: string;
 

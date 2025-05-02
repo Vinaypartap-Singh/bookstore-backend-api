@@ -14,10 +14,13 @@ datasource db {
 }
 
 model BookStore {
-  id          String   @id @default(uuid())
-  bookName    String   @unique
-  bookCaption String
-  tags        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(uuid())
+  bookName        String   @unique
+  bookCaption     String
+  bookImageUrl    String
+  tags            String?
+  bookDownloadUrl String
+  bookGenre       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

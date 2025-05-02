@@ -9,6 +9,18 @@ export class CreateBookDto {
   @IsString()
   bookCaption: string;
 
+  @IsNotEmpty({ message: 'Please Provide a book cover' })
+  @IsString()
+  bookImageUrl: string;
+
+  @IsNotEmpty({ message: 'Book Download Url Required' })
+  @IsString()
+  bookDownloadUrl: string;
+
+  @IsNotEmpty({ message: 'Book Genre Required' })
+  @IsString()
+  bookGenre: string;
+
   @IsOptional()
   @IsString()
   tags?: string;
